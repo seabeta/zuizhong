@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd  
 import shap  
 import matplotlib.pyplot as plt  
-
+import xgboost as xgb  
 # 加载保存的 XGBoost 模型  
 model = joblib.load('xgb.pkl')  # 确认模型文件名是正确的  
 
