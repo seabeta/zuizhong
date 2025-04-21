@@ -6,7 +6,7 @@ import shap
 import matplotlib.pyplot as plt
 
 # 加载保存的随机森林模型
-model = joblib.load('xgb.pkl')
+model = joblib.load('XGBoost.pkl')
 
 # 特征范围定义（根据提供的特征范围和数据类型）
 feature_ranges = {
@@ -48,8 +48,7 @@ features = np.array([feature_values])
 # 预测与 SHAP 可视化
 if st.button("Predict"):
     # 模型预测
-    predicted_class = model.predict(features)[0]
-    predicted_proba = model.predict_proba(features)[0]
+    predicted_class = model.predict(features)
 
     # 提取预测的类别概率
     probability = predicted_proba[predicted_class] * 100
@@ -68,18 +67,17 @@ if st.button("Predict"):
     plt.savefig("prediction_text.png", bbox_inches='tight', dpi=300)
     st.image("prediction_text.png")
 
-    # 计算 SHAP 值
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=feature_ranges.keys()))
 
-    # 生成 SHAP 力图
-    class_index = predicted_class  # 当前预测类别
-    shap_fig = shap.force_plot(
-        explainer.expected_value[class_index],
-        shap_values[:,:,class_index],
-        pd.DataFrame([feature_values], columns=feature_ranges.keys()),
-        matplotlib=True,
-    )
+    # 计算SHAP值并显示力图
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=self.feature_names))
+
+    shap.force_plot(explainer.expected_value, shap_values[0], pd.DataFrame([feature_values], columns=self.feature_names), matplotlib=True)
+    plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=300)
+
+    st.image("shap_force_plot.png")
+
+
     # 保存并显示 SHAP 图
     plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=1200)
     st.image("shap_force_plot.png")
